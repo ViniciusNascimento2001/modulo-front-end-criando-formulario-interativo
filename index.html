@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form h2 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz</h1>
+    <form id="quiz-form">
+        <div class="question">
+            <h2>Pergunta 1:</h2>
+            <label for="q1-answer">Qual é a capital do Brasil?</label>
+            <input type="text" id="q1-answer" name="q1-answer" required>
+            <div class="error-message" id="error-q1"></div>
+        </div>
+
+        <div class="question">
+            <h2>Pergunta 2:</h2>
+            <p>Quem é o autor de "Dom Casmurro"?</p>
+            <label><input type="radio" id="q2-answer-a" name="q2-answer" value="a" required>Machado de Assis</label><br>
+            <label><input type="radio" id="q2-answer-b" name="q2-answer" value="b">Carlos Drummond de Andrade</label><br>
+            <label><input type="radio" id="q2-answer-c" name="q2-answer" value="c">Graciliano Ramos</label>
+            <div class="error-message" id="error-q2"></div>
+        </div>
+
+        <div class="question">
+            <h2>Pergunta 3:</h2>
+            <p>Quais das seguintes linguagens de programação são orientadas a objetos?</p>
+            <label><input type="checkbox" id="q3-answer-a" name="q3-answer-a">Java</label><br>
+            <label><input type="checkbox" id="q3-answer-b" name="q3-answer-b">Python</label><br>
+            <label><input type="checkbox" id="q3-answer-c" name="q3-answer-c">C</label>
+            <div class="error-message" id="error-q3"></div>
+        </div>
+
+        <input type="submit" value="Enviar">
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quiz-form');
+            const resultDiv = document.getElementById('result');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const q1Answer = document.getElementById('q1-answer').value;
+                const q2Answer = document.querySelector('input[name="q2-answer"]:checked');
+                const q3AnswerA = document.getElementById('q3-answer-a').checked;
+                const q3AnswerB = document.getElementById('q3-answer-b').checked;
+                const q3AnswerC = document.getElementById('q3-answer-c').checked;
+
+                // Limpar mensagens de erro anteriores
+                document.querySelectorAll('.error-message').forEach(element => {
+                    element.textContent = '';
+                });
+
+                // Verificar se todas as perguntas foram respondidas corretamente
+                let isValid = true;
+
+                if (q1Answer.trim() === '') {
+                    document.getElementById('error-q1').textContent = 'Por favor, responda a esta pergunta.';
+                    isValid = false;
+                }
+
+                if (!q2Answer) {
+                    document.getElementById('error-q2').textContent = 'Por favor, selecione uma opção.';
+                    isValid = false;
+                }
+
+                if (!q3AnswerA && !q3AnswerB && !q3AnswerC) {
+                    document.getElementById('error-q3').textContent = 'Por favor, selecione pelo menos uma opção.';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    return;
+                }
+
+                // Processar respostas com uma Promise
+                new Promise((resolve, reject) => {
+                    let score = 0;
+
+                    // Avaliar respostas
+                    if (q1Answer.toLowerCase() === 'brasília') {
+                        score += 1;
+                    }
+                    if (q2Answer.value === 'a') {
+                        score += 1;
+                    }
+                    if (q3AnswerA && q3AnswerB && !q3AnswerC) {
+                        score += 1;
+                    }
+
+                    // Simular um pequeno atraso para demonstrar o uso de Promises
+                    setTimeout(() => {
+                        resolve(score);
+                    }, 1000);
+                })
+                .then(score => {
+                    resultDiv.innerHTML = `<p>Você acertou ${score} de 3 perguntas.</p>`;
+                })
+                .catch(error => {
+                    console.error('Ocorreu um erro ao processar as respostas:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
